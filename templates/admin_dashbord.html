@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard - Smart Timetable System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .dashboard-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border-radius: 15px;
+            color: #333;
+        }
+        .admin-name {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #2c3e50;
+        }
+        .welcome-text {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #34495e;
+        }
+        .admin-info {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .admin-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1565c0;
+            margin-bottom: 15px;
+        }
+        .navigation-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        .nav-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .nav-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .nav-link:hover {
+            transform: translateY(-2px);
+            text-decoration: none;
+            color: white;
+        }
+        .logout-link {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="welcome-section">
+            <div class="welcome-text">Administrator Access Panel</div>
+            <div class="admin-name">ADIKASIREDDY</div>
+            <div style="font-size: 18px; color: #34495e;">System Administrator & Faculty Manager</div>
+        </div>
+
+        <div class="admin-info">
+            <div class="admin-title">🔧 Administrative Privileges</div>
+            <div style="font-size: 16px; color: #1976d2; line-height: 1.6;">
+                <strong>Access Level:</strong> Full Administrative Rights<br>
+                <strong>Scope:</strong> Complete Timetable Management System<br>
+                <strong>Permissions:</strong> View, Add, Edit, Delete All Schedule Entries<br>
+                <strong>Target Faculty:</strong> Adikasireddy Personal Timetable Management
+            </div>
+        </div>
+
+        <div class="navigation-section">
+            <div class="nav-title">🛠️ Administrative Functions</div>
+            <div class="nav-links">
+                <a href="/today_schedule" class="nav-link">📊 Today's Schedule Analysis</a>
+                <a href="/view_timetable?faculty_name=adikasireddy" class="nav-link">📅 View Current Timetable</a>
+                <a href="/add_schedule" class="nav-link">➕ Add New Schedule Entry</a>
+                <a href="/upload_schedule" class="nav-link">📄 Parse Document Schedule</a>
+                <a href="/logout" class="nav-link logout-link">🚪 Logout</a>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; color: #666;">
+            <p>Manage adikasireddy's personal timetable with full administrative control.</p>
+            <p><strong>System Status:</strong> Active | <strong>Last Access:</strong> <span id="current-time"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Display current date and time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString();
+            document.getElementById('current-time').textContent = timeString;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>

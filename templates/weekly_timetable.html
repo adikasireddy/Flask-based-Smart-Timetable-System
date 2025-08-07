@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weekly Timetable - Smart Timetable System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .filter-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .filter-section select {
+            padding: 8px 12px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+        .filter-section button {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .weekly-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow-x: auto;
+            display: block;
+            white-space: nowrap;
+        }
+        .weekly-table thead, .weekly-table tbody {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+        .weekly-table th, .weekly-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            vertical-align: top;
+            min-width: 150px;
+        }
+        .weekly-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .time-column {
+            background: #f1f3f4;
+            font-weight: bold;
+            min-width: 100px;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+        }
+        .schedule-entry {
+            background: #e3f2fd;
+            border-radius: 5px;
+            padding: 5px;
+            margin: 2px 0;
+            font-size: 12px;
+            position: relative;
+        }
+        .schedule-entry .faculty {
+            font-weight: bold;
+            color: #1976d2;
+        }
+        .schedule-entry .subject {
+            color: #333;
+            margin: 2px 0;
+        }
+        .schedule-entry .room {
+            color: #666;
+            font-size: 11px;
+        }
+        .edit-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 4px;
+            font-size: 10px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .edit-btn:hover {
+            background: #45a049;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 2px;
+            right: 25px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 4px;
+            font-size: 10px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .delete-btn:hover {
+            background: #da190b;
+        }
+        .back-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin: 5px 10px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            transform: translateY(-2px);
+            text-decoration: none;
+            color: white;
+        }
+        .empty-slot {
+            color: #ccc;
+            font-style: italic;
+            font-size: 11px;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1000;
+            min-width: 300px;
+            text-align: center;
+        }
+        .popup.success {
+            border-left: 5px solid #4caf50;
+        }
+        .popup.error {
+            border-left: 5px solid #f44336;
+        }
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Weekly Timetable View</h1>
+            <p style="color: #666;">Complete schedule overview for all days</p>
+        </div>
+
+        <div class="filter-section">
+            <div>
+                <form method="GET" style="display: inline;">
+                    <label for="faculty_name">Filter by Faculty:</label>
+                    <select name="faculty_name" id="faculty_name">
+                        {% if user_role == 'admin' %}
+                        <option value="" {% if current_filter == 'All Faculty' %}selected{% endif %}>All Faculty</option>
+                        {% endif %}
+                        {% for faculty in faculty_names %}
+                        <option value="{{ faculty }}" {% if faculty == current_filter %}selected{% endif %}>
+                            {{ faculty|title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Filter</button>
+                </form>
+            </div>
+            <div>
+                <p style="margin: 0; font-style: italic;">Showing: <strong>{{ current_filter }}</strong></p>
+            </div>
+        </div>
+
+        {% if weekly_schedule.schedule %}
+        <div style="overflow-x: auto;">
+            <table class="weekly-table">
+                <thead>
+                    <tr>
+                        <th class="time-column">Time</th>
+                        {% for day in weekly_schedule.days %}
+                        <th>{{ day }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for time in weekly_schedule.times %}
+                    <tr>
+                        <td class="time-column">{{ time }}</td>
+                        {% for day in weekly_schedule.days %}
+                        <td>
+                            {% if weekly_schedule.schedule[day][time] %}
+                                {% for entry in weekly_schedule.schedule[day][time] %}
+                                <div class="schedule-entry">
+                                    {% if user_role == 'admin' or (entry.faculty_name == 'adikasireddy' and session.get('user') == 'adikasireddy7036@gmail.com') %}
+                                    <a href="/edit_schedule/{{ entry.id }}" class="edit-btn" title="Edit">✏️</a>
+                                    <a href="/delete_schedule/{{ entry.id }}" class="delete-btn" title="Delete" 
+                                       onclick="return confirmDelete('{{ entry.id }}', '{{ entry.faculty_name }}')">🗑️</a>
+                                    {% endif %}
+                                    <div class="faculty">{{ entry.faculty_name|title }}</div>
+                                    <div class="subject">{{ entry.subject }}</div>
+                                    <div class="room">{{ entry.room }}</div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                            <div class="empty-slot">No class</div>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 40px; color: #666;">
+            <h3>No schedules found</h3>
+            <p>No timetable data available for the selected criteria.</p>
+        </div>
+        {% endif %}
+
+        <div class="back-links">
+            <a href="/view_timetable{% if current_filter != 'All Faculty' %}?faculty_name={{ current_filter }}{% endif %}" class="back-link">📋 List View</a>
+            <a href="/main_dashboard" class="back-link">🏠 Main Dashboard</a>
+            {% if user_role == 'admin' %}
+            <a href="/add_schedule" class="back-link">➕ Add Schedule</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Popup for notifications -->
+    <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
+    <div class="popup" id="popup">
+        <div id="popupMessage"></div>
+        <button onclick="closePopup()" style="margin-top: 15px; padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+    </div>
+
+    <script>
+        function showPopup(message, type = 'success') {
+            const popup = document.getElementById('popup');
+            const popupOverlay = document.getElementById('popupOverlay');
+            const popupMessage = document.getElementById('popupMessage');
+
+            popupMessage.textContent = message;
+            popup.className = `popup ${type}`;
+            popup.style.display = 'block';
+            popupOverlay.style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('popupOverlay').style.display = 'none';
+        }
+
+        function confirmDelete(scheduleId, facultyName) {
+            if (confirm(`Are you sure you want to delete this schedule for ${facultyName}?`)) {
+                fetch(`/delete_schedule/${scheduleId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showPopup(data.message, 'success');
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
+                        } else {
+                            showPopup(data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        showPopup('Error deleting schedule', 'error');
+                    });
+            }
+            return false;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<html>
+<head>
+    <title>Edit Schedule</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select { width: 300px; padding: 8px; border: 1px solid #ddd; }
+        .btn { padding: 10px 20px; margin-right: 10px; text-decoration: none; }
+        .btn-primary { background-color: #007bff; color: white; border: none; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+    <h2>Edit Schedule Entry</h2>
+
+    <form method="post">
+        <div class="form-group">
+            <label for="faculty_name">Faculty Name:</label>
+            {% if user_role == 'admin' %}
+            <input type="text" id="faculty_name" name="faculty_name" value="{{ schedule[1] }}" required>
+            {% else %}
+            <input type="text" id="faculty_name" name="faculty_name" value="{{ schedule[1] }}" readonly required>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="day">Day:</label>
+            <select id="day" name="day" required>
+                <option value="Monday" {% if schedule[2] == 'Monday' %}selected{% endif %}>Monday</option>
+                <option value="Tuesday" {% if schedule[2] == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                <option value="Wednesday" {% if schedule[2] == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                <option value="Thursday" {% if schedule[2] == 'Thursday' %}selected{% endif %}>Thursday</option>
+                <option value="Friday" {% if schedule[2] == 'Friday' %}selected{% endif %}>Friday</option>
+                <option value="Saturday" {% if schedule[2] == 'Saturday' %}selected{% endif %}>Saturday</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="time">Time:</label>
+            <input type="text" id="time" name="time" value="{{ schedule[3] }}" placeholder="e.g., 9:00-10:00" required>
+        </div>
+
+        <div class="form-group">
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" name="subject" value="{{ schedule[4] }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="room">Room:</label>
+            <input type="text" id="room" name="room" value="{{ schedule[5] }}" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Schedule</button>
+        <a href="/view_timetable" class="btn btn-secondary">Cancel</a>
+    </form>
+</body>
+</html>
