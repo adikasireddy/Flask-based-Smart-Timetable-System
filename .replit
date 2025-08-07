@@ -1,0 +1,32 @@
+run =  ["gunicorn", "--bind", "0.0.0.0:5000", "main:app"]
+entrypoint = "main.py"
+modules = ["python-3.11"]
+
+hidden = [".pythonlibs"]
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run =  ["gunicorn", "--bind", "0.0.0.0:5000", "main:app"]
+deploymentTarget = "cloudrun"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[workflows]
+runButton = "Run Smart Timetable"
+
+[[workflows.workflow]]
+name = "Run Smart Timetable"
+author = 45531994
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python -c \"from database import init_database; init_database()\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"
